@@ -1,0 +1,487 @@
+//	Launchpad Script
+// 	written by Thomas "Kloppi" Kloppholz
+//	You can imagein everything, but no new color :)
+//	under Creative Commone "CC  BY-SA" licenze    SHARE + COPY But UNDER SAME LIZENZE and with my Name in it.. :) 
+//  
+// Version 0.1 - 15.4.2013
+// 
+
+
+
+const
+
+  Launchpad_Device = 2;			//   <----- Edit hier your Launchpad Device number from Mairlist Log
+  
+  
+/////////////////////////////////////////////////////////////////////////////////////////// DON*T Touch unless you know what you are doing !!!  
+  
+  cOff   = 12; 		    // LED - OFF
+  cLowRed = 13;			// LED low Red
+  cHighRed = 15;		// LED High Red
+  cBlinkRed = 11;		// LED Blink RED
+  
+  cLowGreen = 28;		// LED low Green
+  cHighGreen = 60;		// LED HIGH Green
+  cBlinkGreen = 56;		// LED BlInK Green
+  
+  cLowAmber = 29;		// LED low Amber
+  cHighAmber = 63;		// LED High Amber
+  cBlinkAmber = 59;		// LED Blink Amber
+  
+  cBlinkYellow = 58;	// LED Blink Yellow
+  cHighYellow = 62;		// LED High Yellow
+  
+var 
+
+	Buttons   : array[-1..100] of integer; 	
+    StopButtons: array[-1..8] of integer;
+	SessionButtons: array[-1..8] of integer;
+	Numbers : array[-1..10] of array[-1..64] of integer;
+	Area:	array[-1..64] of integer;
+	countdown : integer;
+
+function initLaunchpad(werte:integer):boolean;
+var
+	i:integer;
+begin
+	i:=0;
+		MidiOutListDevices;  
+		midioutopen(Launchpad_Device);
+		
+				midiout(	Launchpad_Device , 176 , 0 , 0 ); // Reset Launchpad
+				midiout(	Launchpad_Device , 176 , 0 , 40); // Set Internal Timer
+
+			//Lets init the button-vars
+				
+				StopButtons[0] := 8;       		//	1. Stop Button
+				StopButtons[1] := 24;			//	2. Stop Button
+				StopButtons[2] := 40;			//	3. Stop Button
+				StopButtons[3] := 56;			//	4. Stop Button
+				StopButtons[4] := 72;			//	5. Stop Button
+				StopButtons[5] := 88;			//	6. Stop Button
+				StopButtons[6] := 104;			//	7. Stop Button
+				StopButtons[7] := 120;			//	8. Stop Button
+ 
+			//firstrow
+				for i := 0 to 7 do
+					begin
+						Buttons[i] := i;
+					end;
+			// 2nd row
+				for i:= 8 to 15 do
+					begin
+						Buttons[i] := i+8;
+					end;
+			//3rd row	
+				for i:= 16 to 23 do
+					begin
+						Buttons[i] := i+16;
+					end;
+			//4st row
+				for i:= 24 to 31 do
+					begin
+						Buttons[i] := i+24;
+					end;
+			//5st row
+				for i:= 32 to 39 do
+					begin
+						Buttons[i] := i+32;
+					end;		
+			// 6st row
+				for i:= 40 to 47 do
+					begin
+						Buttons[i] := i+40;
+				end;
+			// 7st row
+				for i:= 48 to 55 do
+					begin
+						Buttons[i] := i+48;
+					end;				
+			//	8st row
+				for i:= 56 to 63 do
+					begin
+						Buttons[i] := i+56;
+					end;				
+
+			// Turn the first two StopButtons on (first 2 Buttons for Cart Player on)
+		for i:=0 to 1 do
+			begin
+				midiout( Launchpad_Device , 144 , StopButtons[i] , cLowAmber);
+			end;
+			// Turn the 3rd StopButtons on  (Player Row)
+				midiout( Launchpad_Device , 144 , StopButtons[2] , cLowGreen);
+		// Session Buttons
+
+			for i:=0 to 7 do
+				begin
+					SessionButtons[i] :=104 + i;
+				end;
+
+			// turning "Mixer" button to green
+				midiout( Launchpad_Device , 176 , SessionButtons[7] , cHighgreen );	
+
+			//Turning "session" Button to green (cause -> assist)
+				midiout(Launchpad_Device,176, SessionButtons[4],cHighGreen);
+				
+// ZEICHNUNGS-Vorbereitungen...
+
+
+			//Zeichnungsareal
+				Area[0] := 53;
+				Area[1] := 54;
+				Area[2] := 55;
+				Area[3] := 69;
+				Area[4] := 70;
+				Area[5] := 71;
+				Area[6] := 85;
+				Area[7] := 86;
+				Area[8] := 87;
+				Area[9] := 101;
+				Area[10] := 102;
+				Area[11] := 103;
+				Area[12] := 117;
+				Area[13] := 118;
+				Area[14] := 119;
+
+		// Nummern 
+		
+	Numbers[1][-1] := cHighRed;			
+	Numbers[1][0] := 118;		
+	Numbers[1][2] := 54;
+	Numbers[1][3] := 70
+	Numbers[1][4] := 86;
+	Numbers[1][5] := 102
+	Numbers[1][6] := 118;	
+		
+	Numbers[2][-1] := cHighamber;				
+	Numbers[2][0] := 117;		
+    Numbers[2][1] := 53;
+	Numbers[2][2] := 54;
+	Numbers[2][3] := 55;
+	Numbers[2][4] := 71;
+	Numbers[2][5] := 85;
+	Numbers[2][6] := 86;
+	Numbers[2][7] := 87;
+	Numbers[2][8] := 101;
+	Numbers[2][9] := 119;
+	Numbers[2][10] := 118;
+	
+	Numbers[3][-1] := cHighamber;				
+	Numbers[3][0] := 117;		
+    Numbers[3][1] := 53;
+	Numbers[3][2] := 54;
+	Numbers[3][3] := 55;
+	Numbers[3][4] := 71;
+	Numbers[3][5] := 85;
+	Numbers[3][6] := 86;
+	Numbers[3][7] := 87;
+	Numbers[3][8] := 103;
+	Numbers[3][9] := 119;
+	Numbers[3][10] := 118;
+		
+	Numbers[4][-1] := cHighYellow;				
+    Numbers[4][1] := 53;
+	Numbers[4][2] := 55;
+	Numbers[4][3] := 69;
+	Numbers[4][4] := 85;
+	Numbers[4][5] := 86;
+	Numbers[4][6] := 87;
+	Numbers[4][7] := 103;
+	Numbers[4][8] := 119;
+	Numbers[4][9] := 71;
+	
+	Numbers[5][-1] := cHighGreen;						
+	Numbers[5][0] := 117;		
+    Numbers[5][1] := 53;
+	Numbers[5][2] := 54;
+	Numbers[5][3] := 55;
+	Numbers[5][4] := 69;
+	Numbers[5][5] := 85;
+	Numbers[5][6] := 86;
+	Numbers[5][7] := 87;
+	Numbers[5][8] := 103;
+	Numbers[5][9] := 119;
+	Numbers[5][10] := 118;
+
+   Numbers[6][-1] := cHighGreen;					
+	Numbers[6][0] := 117;		
+    Numbers[6][1] := 53;
+	Numbers[6][2] := 54;
+	Numbers[6][3] := 55;
+	Numbers[6][4] := 69;
+	Numbers[6][5] := 85;
+	Numbers[6][6] := 86;
+	Numbers[6][7] := 87;
+	Numbers[6][8] := 101;
+	Numbers[6][9] := 119;
+	Numbers[6][10] := 118;
+	Numbers[6][11] := 103;	
+	
+	result:=true;	
+end;
+
+
+	
+procedure OnLoad;
+begin
+	initLaunchpad(0);
+ 
+	countdown := 0;
+
+	enabletimer(1000);
+end;
+
+procedure OnShutdown;
+begin
+	initLaunchpad(0);
+
+end;
+
+
+procedure onTimer();
+var 
+
+	i,i2:integer;
+	a:integer;
+	found:boolean;
+begin
+if (countdown >=0 ) then
+begin
+	for i := 0 to 14 do
+		begin
+			a:=area[i];
+			found := false;
+			for i2:=0 to 63 do
+			 begin
+			if (a = Numbers[countdown][i2]) then
+					begin
+					  found := true;
+					end;
+			 end;
+			 if (found) then 
+				begin
+					midiout(	Launchpad_Device,144, a,Numbers[countdown][-1]);
+				end
+				else
+				begin
+					midiout(	Launchpad_Device,144, a,cOff)
+				end;
+		end;
+countdown := countdown -1;
+end;
+	
+end;
+
+procedure OnCartPlayerEOFWarning(PlayerIndex: integer);
+begin
+	countdown :=5;
+	midiout(Launchpad_Device,144, Buttons[PlayerIndex],cBlinkRed);
+end;
+
+
+procedure OnCartPlayerStateChange(PlayerIndex: integer; OldState: TPlayerState; NewState: TPlayerState);
+var row:integer;
+begin
+
+	row := PlayerIndex div 8;
+
+if  (OldState = psStopped) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cHighAmber);
+		midiout(Launchpad_Device,144, StopButtons[row],cHighRed);
+	end
+else if (NewState = psLoaded) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cHighGreen);
+		midiout(Launchpad_Device,144, StopButtons[row],cHighRed);
+	end
+else if (NewState = psEmpty) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cOff);
+		midiout(Launchpad_Device,144, StopButtons[row],clowRed);
+	end
+else if (NewState = psPlaying) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cHighRed);
+		midiout(Launchpad_Device,144, StopButtons[row],cBlinkRed);
+	end
+else if (NewState = psFading) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cBlinkRed);
+		midiout(Launchpad_Device,144, StopButtons[row],cBlinkRed);
+	end
+else if (NewState = psError) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cBlinkYellow);
+	end
+
+else if (NewState = psLoading) then 
+	begin
+		midiout(Launchpad_Device,144, Buttons[PlayerIndex],cBlinkGreen);
+	end;
+	
+	
+	
+end;
+
+function playerset(number,color,colorlast:integer):boolean;
+var 
+	playerbuttons: array[-1..64] of array[-1..64] of integer;
+	i,x:integer;
+begin
+	result := false;
+	x:=0;
+	for i :=16 to 19 do
+	 begin
+		playerbuttons[0][x] := Buttons[i];
+		x:=x+1;
+	 end;
+	x:=0;
+	 for i :=20 to 23 do
+	 begin
+		playerbuttons[1][x] := Buttons[i];
+		x:=x+1;
+	 end;
+	  for i:=0 to 2 do
+		begin
+			midiout(Launchpad_Device,144,playerbuttons[number][i],color);
+		end;
+			midiout(Launchpad_Device,144,playerbuttons[number][3],colorlast);
+		  SystemLog('' + inttostr(number));
+		result := true;
+end;
+
+
+
+
+
+
+procedure OnPlayerStateChange(Playlist,PlayerIndex: integer; OldState: TPlayerState; NewState: TPlayerState);
+
+
+begin
+
+	
+
+if (NewState = psLoaded) then 
+	begin
+	playerset(PlayerIndex, cHighGreen,chighyellow);
+	end
+else if (NewState = psEmpty) then 
+	begin
+		playerset(PlayerIndex, cOff,cOff);
+	end
+else if (NewState = psPlaying) then 
+	begin
+		playerset(PlayerIndex, cBlinkRed,cHighRed);
+	end
+else if (NewState = psFading) then 
+	begin
+	playerset(PlayerIndex, cBlinkRed,cHighRed);
+		
+	end
+else if (NewState = psError) then 
+	begin
+		playerset(PlayerIndex, cBlinkYellow,cBlinkRed);
+	end
+
+else if (NewState = psLoading) then 
+	begin
+		playerset(PlayerIndex, cBlinkGreen,cBlinkRed);
+	end;
+	
+	
+	
+end;
+
+
+procedure OnOnAir();
+begin
+	midiout(Launchpad_Device,176, SessionButtons[7],cHighRed);
+end;
+
+procedure OnOffAir();
+begin
+	midiout(Launchpad_Device,176, SessionButtons[7],cHighgreen);
+end;
+
+
+procedure OnAutomationOn(PlaylistIndex: integer);
+begin
+			midiout(Launchpad_Device,176, SessionButtons[4],cHighRed);
+end;
+
+procedure OnAutomationOff(PlaylistIndex: integer);
+begin
+			midiout(Launchpad_Device,176, SessionButtons[4],cHighGreen);
+
+end;
+
+
+
+procedure OnMidiMessage(Device: integer; Status, Data1, Data2: byte);
+var 
+row,i,i_div:integer;
+begin
+row:=0;
+i:=0;
+i_div:=0;
+    		systemlog(inttostr(Data1));
+						if (Status = 144) then
+							begin
+								row := Data1 div 16;
+								i_div := Data1 mod 16;
+								systemlog(inttostr(i_div));
+							if (Data2 = 127) then
+								begin
+								  if (row = 0) or (row = 1) then 
+								   begin
+									if ( i_div <8) then 
+										begin
+											ExecuteCommand('CARTWALL ' + inttostr(row*8+i_div +1) + ' START/STOP');
+										end
+									else if (i_div = 8) then
+										begin
+											for i:=0 to 7 do
+												begin
+													ExecuteCommand('CARTWALL ' + inttostr(row*8+i +1) + ' STOP');
+												end;
+										end;
+								   end 
+								   else if (row = 2) then
+									begin
+										if (i_div = 8) then
+											begin
+												EXECUTECommand('AUTOMATION 1 FORCENEXT');
+											end;
+									end;
+									
+								end;
+								
+								 
+								
+					  
+							end
+							else if (Status = 176) then
+							begin
+								if (Data1 = 104) and (Data2 = 127) then
+									begin
+										ExecuteCommand('PLAYLIST 1 CURSOR UP');
+									end;
+								if (Data1 = 105) and (Data2 = 127) then
+									begin
+										ExecuteCommand('PLAYLIST 1 CURSOR DOWN');
+									end;	
+								if (Data1 = 107) and (Data2 = 127) then
+									begin
+										ExecuteCommand('PLAYLIST 1 SKIPTOHERE');
+									end;	
+								if (Data1 = 108) and (Data2 = 127) then
+									begin
+										ExecuteCommand('AUTOMATION 1 ON/OFF');
+									end;	
+								end;
+end;
+
+begin
+end.
