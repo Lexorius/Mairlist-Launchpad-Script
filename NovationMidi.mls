@@ -10,7 +10,7 @@
 
 const
 
-  Launchpad_Device = 2;			//   <----- Edit hier your Launchpad Device number from Mairlist Log
+  Launchpad_Device = 6;			//   <----- Edit hier your Launchpad Device number from Mairlist Log
   
   
 /////////////////////////////////////////////////////////////////////////////////////////// DON*T Touch unless you know what you are doing !!!  
@@ -357,15 +357,19 @@ end;
 
 
 procedure OnPlayerStateChange(Playlist,PlayerIndex: integer; OldState: TPlayerState; NewState: TPlayerState);
-
-
+var 
+	i:integer;
 begin
 
 	
 
 if (NewState = psLoaded) then 
 	begin
-	playerset(PlayerIndex, cHighGreen,chighyellow);
+		playerset(PlayerIndex, cHighGreen,chighyellow);
+		for i:=4 to 7 do
+			begin
+					midiout (Launchpad_Device,144,Stopbuttons[i], cOff);
+			end;
 	end
 else if (NewState = psEmpty) then 
 	begin
@@ -418,6 +422,30 @@ begin
 end;
 
 
+procedure OnPlaylistEmptyWarning(PlaybackControl: IPlaybackControl; Playlist: IPlaylist);
+var 
+	i:integer;
+begin
+	for i:=4 to 7 do	
+		begin
+			midiout (Launchpad_Device,144,Stopbuttons[i], cBlinkRed);
+		end;
+
+
+end;
+
+
+procedure OnPlaylistEmpty(PlaybackControl: IPlaybackControl; Playlist: IPlaylist);
+var 
+	i:integer;
+begin
+	for i:=4 to 7 do	
+		begin
+			midiout (Launchpad_Device,144,Stopbuttons[i], cBlinkRed);
+		end;
+
+	
+end;
 
 procedure OnMidiMessage(Device: integer; Status, Data1, Data2: byte);
 var 
